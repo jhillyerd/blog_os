@@ -8,15 +8,7 @@ mod vga_buffer;
 /// The linker entry point.
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    use core::fmt::Write;
-    vga_buffer::WRITER.lock().write_str("Hello again").unwrap();
-    write!(
-        vga_buffer::WRITER.lock(),
-        "The nums {} and {}",
-        42,
-        1.0 / 3.0
-    )
-    .unwrap();
+    println!("Hello macro World{}", "!");
 
     loop {}
 }
