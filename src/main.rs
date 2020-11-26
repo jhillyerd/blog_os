@@ -13,7 +13,11 @@ pub extern "C" fn _start() -> ! {
     println!("** blog_os starting **");
 
     blog_os::init();
-    x86_64::instructions::interrupts::int3();
+
+    unsafe {
+        // page fault
+        *(0xdeadbeef as *mut u64) = 42;
+    }
 
     #[cfg(test)]
     test_main();
