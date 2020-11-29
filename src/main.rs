@@ -18,7 +18,10 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     println!("** blog_os done **");
-    loop {}
+    loop {
+        use blog_os::print;
+        print!("-");
+    }
 }
 
 /// Called on panic.
