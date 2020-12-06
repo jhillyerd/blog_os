@@ -42,13 +42,6 @@ pub fn init_heap(
     Ok(())
 }
 
-/// Align the given address upwards to the specified alignment.
-///
-/// align must be a power of two.
-fn align_up(addr: usize, align: usize) -> usize {
-    (addr + align - 1) & !(align - 1)
-}
-
 /// A wrapper around spin::Mutex to permit trait implementations.
 pub struct Locked<A> {
     inner: spin::Mutex<A>,
