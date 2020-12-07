@@ -6,27 +6,37 @@
 
 extern crate alloc;
 
+use blog_os::task::{simple_executor::SimpleExecutor, Task};
 use blog_os::{memory, memory::BootInfoFrameAllocator, println};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use x86_64::VirtAddr;
 
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    println!("async num: {}", number);
+}
+
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use alloc::boxed::Box;
-
     println!("** blog_os starting **");
     blog_os::init();
 
+    // Initialize heap.
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
-
     blog_os::allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap init failed");
 
-    let x = Box::new(41);
-    println!("heap value at {:p}", x);
+    // Async.
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.run();
 
     #[cfg(test)]
     test_main();
