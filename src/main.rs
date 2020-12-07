@@ -6,7 +6,7 @@
 
 extern crate alloc;
 
-use blog_os::task::{simple_executor::SimpleExecutor, Task};
+use blog_os::task::{keyboard::print_keypresses, simple_executor::SimpleExecutor, Task};
 use blog_os::{memory, memory::BootInfoFrameAllocator, println};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
@@ -36,6 +36,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // Async.
     let mut executor = SimpleExecutor::new();
     executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(print_keypresses()));
     executor.run();
 
     #[cfg(test)]
