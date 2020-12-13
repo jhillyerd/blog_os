@@ -33,17 +33,14 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
     blog_os::allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap init failed");
 
+    #[cfg(test)]
+    test_main();
+
     // Async.
     let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(print_keypresses()));
     executor.run();
-
-    #[cfg(test)]
-    test_main();
-
-    println!("** blog_os did not crash **");
-    blog_os::hlt_loop();
 }
 
 /// Called on panic.
